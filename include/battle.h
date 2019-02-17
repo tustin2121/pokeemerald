@@ -461,7 +461,7 @@ struct BattleStruct
     u8 wallyWaitFrames;
     u8 wallyMoveFrames;
     u8 lastTakenMove[MAX_BATTLERS_COUNT * 2 * 2]; // Last move that a battler was hit with. This field seems to erroneously take 16 bytes instead of 8.
-    u16 hpOnSwitchout[2];
+    s16 hpOnSwitchout[2];
     u32 savedBattleTypeFlags;
     u8 abilityPreventingSwitchout;
     u8 hpScale;
@@ -497,7 +497,7 @@ struct BattleStruct
     u8 AI_monToSwitchIntoId[MAX_BATTLERS_COUNT];
     s8 arenaMindPoints[2];
     s8 arenaSkillPoints[2];
-    u16 arenaStartHp[2];
+    s16 arenaStartHp[2];
     u8 arenaLostPlayerMons; // Bits for party member, lost as in referee's decision, not by fainting.
     u8 arenaLostOpponentMons;
     u8 alreadyStatusedMoveAttempt; // As bits for battlers; For example when using Thunder Wave on an already paralyzed pokemon.

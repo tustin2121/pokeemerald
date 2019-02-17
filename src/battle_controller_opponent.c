@@ -389,7 +389,7 @@ static void CompleteOnHealthbarDone(void)
 {
     s16 hpValue = MoveBattleBar(gActiveBattler, gHealthboxSpriteIds[gActiveBattler], HEALTH_BAR, 0);
     SetHealthboxSpriteVisible(gHealthboxSpriteIds[gActiveBattler]);
-    if (hpValue != -1)
+    if (hpValue != -32767) //if not finished going down yet
     {
         UpdateHpTextInHealthbox(gHealthboxSpriteIds[gActiveBattler], hpValue, HP_CURRENT);
     }
@@ -1634,7 +1634,7 @@ static void OpponentHandleChoosePokemon(void)
 
             for (chosenMonId = firstId; chosenMonId < lastId; chosenMonId++)
             {
-                if (GetMonData(&gEnemyParty[chosenMonId], MON_DATA_HP) != 0
+                if (GetMonData(&gEnemyParty[chosenMonId], MON_DATA_HP) > 0
                     && chosenMonId != gBattlerPartyIndexes[battler1]
                     && chosenMonId != gBattlerPartyIndexes[battler2])
                 {
@@ -1669,14 +1669,14 @@ static void OpponentHandleHealthBarUpdate(void)
 
     if (hpVal != INSTANT_HP_BAR_DROP)
     {
-        u32 maxHP = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
-        u32 curHP = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_HP);
+        s32 maxHP = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
+        s32 curHP = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_HP);
 
         SetBattleBarStruct(gActiveBattler, gHealthboxSpriteIds[gActiveBattler], maxHP, curHP, hpVal);
     }
     else
     {
-        u32 maxHP = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
+        s32 maxHP = GetMonData(&gEnemyParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
 
         SetBattleBarStruct(gActiveBattler, gHealthboxSpriteIds[gActiveBattler], maxHP, 0, hpVal);
     }

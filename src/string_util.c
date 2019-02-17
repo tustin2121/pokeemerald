@@ -179,6 +179,7 @@ u8 *ConvertIntToDecimalStringN(u8 *dest, s32 value, enum StringConvertMode mode,
     enum { WAITING_FOR_NONZERO_DIGIT, WRITING_DIGITS, WRITING_SPACES } state;
     s32 powerOfTen;
     s32 largestPowerOfTen = sPowersOfTen[n - 1];
+    u8 *lastDest = 0;
 
     state = WAITING_FOR_NONZERO_DIGIT;
 
@@ -187,6 +188,14 @@ u8 *ConvertIntToDecimalStringN(u8 *dest, s32 value, enum StringConvertMode mode,
 
     if (mode == STR_CONV_MODE_LEADING_ZEROS)
         state = WRITING_DIGITS;
+    
+    if (mode == STR_CONV_MODE_LEADING_MINUS)
+    {
+        lastDest = dest++;
+        *lastDest = value < 0 ? CHAR_HYPHEN : 0x77;
+        state = WRITING_SPACES;
+    }
+    value = abs(value);
 
     for (powerOfTen = largestPowerOfTen; powerOfTen > 0; powerOfTen /= 10)
     {
@@ -220,7 +229,16 @@ u8 *ConvertIntToDecimalStringN(u8 *dest, s32 value, enum StringConvertMode mode,
         }
         else if (state == WRITING_SPACES)
         {
-            *dest++ = 0x77;
+            if (lastDest)
+            {
+                // Move up the negative sign if there is one
+                *dest++ = *lastDest;
+                *lastDest++ = 0x77;
+            }
+            else
+            {
+                *dest++ = 0x77;
+            }
         }
 
         value = temp;

@@ -525,7 +525,7 @@ struct Roamer
     /*0x00*/ u32 ivs;
     /*0x04*/ u32 personality;
     /*0x08*/ u16 species;
-    /*0x0A*/ u16 hp;
+    /*0x0A*/ s16 hp;
     /*0x0C*/ u8 level;
     /*0x0D*/ u8 status;
     /*0x0E*/ u8 cool;

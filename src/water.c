@@ -2009,8 +2009,8 @@ void sub_8108140(u8 taskId)
 u8 sub_8108384(void)
 {
     u8 i;
-    u16 hp;
-    u16 maxhp;
+    s16 hp;
+    s16 maxhp;
     u16 partyIndex;
     struct Pokemon *slot;
     

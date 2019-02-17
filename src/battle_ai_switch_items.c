@@ -81,7 +81,7 @@ static bool8 ShouldSwitchIfWonderGuard(void)
     // Find a Pokemon in the party that has a super effective move.
     for (i = firstId; i < lastId; i++)
     {
-        if (GetMonData(&party[i], MON_DATA_HP) == 0)
+        if (GetMonData(&party[i], MON_DATA_HP) <= 0)
             continue;
         if (GetMonData(&party[i], MON_DATA_SPECIES2) == SPECIES_NONE)
             continue;
@@ -179,7 +179,7 @@ static bool8 FindMonThatAbsorbsOpponentsMove(void)
         u16 species;
         u8 monAbility;
 
-        if (GetMonData(&party[i], MON_DATA_HP) == 0)
+        if (GetMonData(&party[i], MON_DATA_HP) <= 0)
             continue;
         if (GetMonData(&party[i], MON_DATA_SPECIES2) == SPECIES_NONE)
             continue;
@@ -374,7 +374,7 @@ static bool8 FindMonWithFlagsAndSuperEffective(u8 flags, u8 moduloPercent)
         u16 species;
         u8 monAbility;
 
-        if (GetMonData(&party[i], MON_DATA_HP) == 0)
+        if (GetMonData(&party[i], MON_DATA_HP) <= 0)
             continue;
         if (GetMonData(&party[i], MON_DATA_SPECIES2) == SPECIES_NONE)
             continue;
@@ -482,7 +482,7 @@ static bool8 ShouldSwitch(void)
 
     for (i = firstId; i < lastId; i++)
     {
-        if (GetMonData(&party[i], MON_DATA_HP) == 0)
+        if (GetMonData(&party[i], MON_DATA_HP) <= 0)
             continue;
         if (GetMonData(&party[i], MON_DATA_SPECIES2) == SPECIES_NONE)
             continue;
@@ -568,7 +568,7 @@ void AI_TrySwitchOrUseItem(void)
 
                     for (monToSwitchId = firstId; monToSwitchId < lastId; monToSwitchId++)
                     {
-                        if (GetMonData(&party[monToSwitchId], MON_DATA_HP) == 0)
+                        if (GetMonData(&party[monToSwitchId], MON_DATA_HP) <= 0)
                             continue;
                         if (monToSwitchId == gBattlerPartyIndexes[battlerIn1])
                             continue;
@@ -688,7 +688,7 @@ u8 GetMostSuitableMonToSwitchInto(void)
         {
             u16 species = GetMonData(&party[i], MON_DATA_SPECIES);
             if (species != SPECIES_NONE
-                && GetMonData(&party[i], MON_DATA_HP) != 0
+                && GetMonData(&party[i], MON_DATA_HP) > 0
                 && !(gBitTable[i] & invalidMons)
                 && gBattlerPartyIndexes[battlerIn1] != i
                 && gBattlerPartyIndexes[battlerIn2] != i
@@ -746,7 +746,7 @@ u8 GetMostSuitableMonToSwitchInto(void)
     {
         if ((u16)(GetMonData(&party[i], MON_DATA_SPECIES)) == SPECIES_NONE)
             continue;
-        if (GetMonData(&party[i], MON_DATA_HP) == 0)
+        if (GetMonData(&party[i], MON_DATA_HP) <= 0)
             continue;
         if (gBattlerPartyIndexes[battlerIn1] == i)
             continue;
@@ -811,7 +811,7 @@ static bool8 ShouldUseItem(void)
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        if (GetMonData(&party[i], MON_DATA_HP) != 0
+        if (GetMonData(&party[i], MON_DATA_HP) > 0
             && GetMonData(&party[i], MON_DATA_SPECIES2) != SPECIES_NONE
             && GetMonData(&party[i], MON_DATA_SPECIES2) != SPECIES_EGG)
         {
@@ -846,7 +846,7 @@ static bool8 ShouldUseItem(void)
         case AI_ITEM_FULL_RESTORE:
             if (gBattleMons[gActiveBattler].hp >= gBattleMons[gActiveBattler].maxHP / 4)
                 break;
-            if (gBattleMons[gActiveBattler].hp == 0)
+            if (gBattleMons[gActiveBattler].hp <= 0)
                 break;
             shouldUse = TRUE;
             break;
@@ -854,7 +854,7 @@ static bool8 ShouldUseItem(void)
             paramOffset = GetItemEffectParamOffset(item, 4, 4);
             if (paramOffset == 0)
                 break;
-            if (gBattleMons[gActiveBattler].hp == 0)
+            if (gBattleMons[gActiveBattler].hp <= 0)
                 break;
             if (gBattleMons[gActiveBattler].hp < gBattleMons[gActiveBattler].maxHP / 4 || gBattleMons[gActiveBattler].maxHP - gBattleMons[gActiveBattler].hp > itemEffects[paramOffset])
                 shouldUse = TRUE;

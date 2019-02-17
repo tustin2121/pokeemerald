@@ -258,7 +258,7 @@ void BattleTv_SetDataBasedOnString(u16 stringId)
         break;
     case STRINGID_NOTVERYEFFECTIVE:
         AddMovePoints(1, moveSlot, 1, 0);
-        if (!(gBattleTypeFlags & BATTLE_TYPE_LINK) && GetMonData(defMon, MON_DATA_HP, NULL) != 0)
+        if (!(gBattleTypeFlags & BATTLE_TYPE_LINK) && GetMonData(defMon, MON_DATA_HP, NULL) > 0)
             TrySetBattleSeminarShow();
         break;
     case STRINGID_SUPEREFFECTIVE:
@@ -374,7 +374,7 @@ void BattleTv_SetDataBasedOnString(u16 stringId)
         tvPtr->pos[defSide][defFlank].curseMoveSlot = moveSlot;
         break;
     case STRINGID_PKMNAFFLICTEDBYCURSE:
-        if (GetMonData(atkMon, MON_DATA_HP, NULL)
+        if (GetMonData(atkMon, MON_DATA_HP, NULL) > 0
             && tvPtr->pos[atkSide][atkFlank].curseMonId != 0)
         {
             AddMovePoints(8, 0, tvPtr->pos[atkSide][atkFlank].curseMonId - 1, tvPtr->pos[atkSide][atkFlank].curseMoveSlot);
@@ -399,7 +399,7 @@ void BattleTv_SetDataBasedOnString(u16 stringId)
         tvPtr->pos[defSide][defFlank].nightmareMoveSlot = moveSlot;
         break;
     case STRINGID_PKMNLOCKEDINNIGHTMARE:
-        if (GetMonData(atkMon, MON_DATA_HP, NULL) != 0
+        if (GetMonData(atkMon, MON_DATA_HP, NULL) > 0
             && tvPtr->pos[atkSide][atkFlank].nightmareMonId != 0)
         {
             AddMovePoints(8, 5, tvPtr->pos[atkSide][atkFlank].nightmareMonId - 1, tvPtr->pos[atkSide][atkFlank].nightmareMoveSlot);
@@ -416,7 +416,7 @@ void BattleTv_SetDataBasedOnString(u16 stringId)
         tvPtr->pos[defSide][defFlank].wrapMoveSlot = moveSlot;
         break;
     case STRINGID_PKMNHURTBY:
-        if (GetMonData(atkMon, MON_DATA_HP, NULL) != 0
+        if (GetMonData(atkMon, MON_DATA_HP, NULL) > 0
             && tvPtr->pos[atkSide][atkFlank].wrapMonId != 0)
         {
             AddMovePoints(8, 6, tvPtr->pos[atkSide][atkFlank].wrapMonId - 1, tvPtr->pos[atkSide][atkFlank].wrapMoveSlot);
@@ -429,7 +429,7 @@ void BattleTv_SetDataBasedOnString(u16 stringId)
         tvPtr->mon[effSide][gBattlerPartyIndexes[gEffectBattler]].brnMoveSlot = moveSlot;
         break;
     case STRINGID_PKMNHURTBYBURN:
-        if (GetMonData(atkMon, MON_DATA_HP, NULL) != 0)
+        if (GetMonData(atkMon, MON_DATA_HP, NULL) > 0)
         {
             if (tvPtr->mon[atkSide][gBattlerPartyIndexes[gBattlerAttacker]].brnMonId != 0)
                 AddMovePoints(8, 4, tvPtr->mon[atkSide][gBattlerPartyIndexes[gBattlerAttacker]].brnMonId - 1, tvPtr->mon[atkSide][gBattlerPartyIndexes[gBattlerAttacker]].brnMoveSlot);
@@ -446,7 +446,7 @@ void BattleTv_SetDataBasedOnString(u16 stringId)
         tvPtr->mon[effSide][gBattlerPartyIndexes[gEffectBattler]].badPsnMoveSlot = moveSlot;
         break;
     case STRINGID_PKMNHURTBYPOISON:
-        if (GetMonData(atkMon, MON_DATA_HP, NULL) != 0)
+        if (GetMonData(atkMon, MON_DATA_HP, NULL) > 0)
         {
             if (tvPtr->mon[atkSide][gBattlerPartyIndexes[gBattlerAttacker]].psnMonId != 0)
                 AddMovePoints(8, 2, tvPtr->mon[atkSide][gBattlerPartyIndexes[gBattlerAttacker]].psnMonId - 1, tvPtr->mon[atkSide][gBattlerPartyIndexes[gBattlerAttacker]].psnMoveSlot);

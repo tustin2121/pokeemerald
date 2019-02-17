@@ -222,7 +222,7 @@ static void CreateBattlerSprite(u8 battler)
 
         if (GetBattlerSide(battler) != B_SIDE_PLAYER)
         {
-            if (GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) == 0)
+            if (GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) <= 0)
                 return;
 
             SetMultiuseSpriteTemplateToPokemon(GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_SPECIES), GetBattlerPosition(battler));
@@ -258,7 +258,7 @@ static void CreateBattlerSprite(u8 battler)
         }
         else
         {
-            if (GetMonData(&gPlayerParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) == 0)
+            if (GetMonData(&gPlayerParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) <= 0)
                 return;
 
             SetMultiuseSpriteTemplateToPokemon(GetMonData(&gPlayerParty[gBattlerPartyIndexes[battler]], MON_DATA_SPECIES), GetBattlerPosition(battler));
@@ -308,12 +308,12 @@ static void CreateHealthboxSprite(u8 battler)
 
         if (GetBattlerSide(battler) != B_SIDE_PLAYER)
         {
-            if (GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) == 0)
+            if (GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) <= 0)
                 SetHealthboxSpriteInvisible(healthboxSpriteId);
         }
         else if (!(gBattleTypeFlags & BATTLE_TYPE_SAFARI))
         {
-            if (GetMonData(&gPlayerParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) == 0)
+            if (GetMonData(&gPlayerParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) <= 0)
                 SetHealthboxSpriteInvisible(healthboxSpriteId);
         }
     }

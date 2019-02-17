@@ -10,7 +10,8 @@ enum StringConvertMode
 {
     STR_CONV_MODE_LEFT_ALIGN,
     STR_CONV_MODE_RIGHT_ALIGN,
-    STR_CONV_MODE_LEADING_ZEROS
+    STR_CONV_MODE_LEADING_ZEROS,
+    STR_CONV_MODE_LEADING_MINUS
 };
 
 u8 *StringCopy10(u8 *dest, const u8 *src);

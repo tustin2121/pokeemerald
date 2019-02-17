@@ -294,7 +294,7 @@ static void CompleteOnHealthbarDone(void)
 
     SetHealthboxSpriteVisible(gHealthboxSpriteIds[gActiveBattler]);
 
-    if (hpValue != -1)
+    if (hpValue != -32767) //if not finished going down yet
     {
         UpdateHpTextInHealthbox(gHealthboxSpriteIds[gActiveBattler], hpValue, HP_CURRENT);
     }
@@ -397,7 +397,7 @@ static void sub_81BB4E4(u8 taskId)
 
         r4 = MoveBattleBar(battlerId, gHealthboxSpriteIds[battlerId], EXP_BAR, 0);
         SetHealthboxSpriteVisible(gHealthboxSpriteIds[battlerId]);
-        if (r4 == -1)
+        if (r4 == -32767) // if finished going up
         {
             u8 level;
             s32 currExp;
@@ -1545,7 +1545,7 @@ static void PlayerPartnerHandleChoosePokemon(void)
 
         for (chosenMonId = 3; chosenMonId < 6; chosenMonId++)
         {
-            if (GetMonData(&gPlayerParty[chosenMonId], MON_DATA_HP) != 0
+            if (GetMonData(&gPlayerParty[chosenMonId], MON_DATA_HP) > 0
                 && chosenMonId != gBattlerPartyIndexes[playerMonIdentity]
                 && chosenMonId != gBattlerPartyIndexes[selfIdentity])
             {
@@ -1573,14 +1573,14 @@ static void PlayerPartnerHandleHealthBarUpdate(void)
 
     if (hpVal != INSTANT_HP_BAR_DROP)
     {
-        u32 maxHP = GetMonData(&gPlayerParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
-        u32 curHP = GetMonData(&gPlayerParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_HP);
+        s32 maxHP = GetMonData(&gPlayerParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
+        s32 curHP = GetMonData(&gPlayerParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_HP);
 
         SetBattleBarStruct(gActiveBattler, gHealthboxSpriteIds[gActiveBattler], maxHP, curHP, hpVal);
     }
     else
     {
-        u32 maxHP = GetMonData(&gPlayerParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
+        s32 maxHP = GetMonData(&gPlayerParty[gBattlerPartyIndexes[gActiveBattler]], MON_DATA_MAX_HP);
 
         SetBattleBarStruct(gActiveBattler, gHealthboxSpriteIds[gActiveBattler], maxHP, 0, hpVal);
     }

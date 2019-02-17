@@ -728,7 +728,7 @@ static void sub_8036A5C(void)
 {
     u16 r6 = 0;
     u16 species = 0;
-    u16 hp = 0;
+    s16 hp = 0;
     u32 status = 0;
     s32 i;
 
@@ -740,17 +740,17 @@ static void sub_8036A5C(void)
 
         if (species == SPECIES_NONE)
             continue;
-        if (species != SPECIES_EGG && hp != 0 && status == 0)
+        if (species != SPECIES_EGG && hp > 0 && status == 0)
             r6 |= 1 << i * 2;
 
         if (species == SPECIES_NONE)
             continue;
-        if (hp != 0 && (species == SPECIES_EGG || status != 0))
+        if (hp > 0 && (species == SPECIES_EGG || status != 0))
             r6 |= 2 << i * 2;
 
         if (species == SPECIES_NONE)
             continue;
-        if (species != SPECIES_EGG && hp == 0)
+        if (species != SPECIES_EGG && hp <= 0)
             r6 |= 3 << i * 2;
     }
 
@@ -2152,22 +2152,22 @@ static void sub_8038B94(u8 taskId)
     for (i = 0; i < PARTY_SIZE; i++)
     {
         u16 species = GetMonData(&sp4[i], MON_DATA_SPECIES2);
-        u16 hp = GetMonData(&sp4[i], MON_DATA_HP);
+        s16 hp = GetMonData(&sp4[i], MON_DATA_HP);
         u32 status = GetMonData(&sp4[i], MON_DATA_STATUS);
 
         if (species == SPECIES_NONE)
             continue;
-        if (species != SPECIES_EGG && hp != 0 && status == 0)
+        if (species != SPECIES_EGG && hp > 0 && status == 0)
             r7 |= 1 << i * 2;
 
         if (species == SPECIES_NONE)
             continue;
-        if (hp != 0 && (species == SPECIES_EGG || status != 0))
+        if (hp > 0 && (species == SPECIES_EGG || status != 0))
             r7 |= 2 << i * 2;
 
         if (species == SPECIES_NONE)
             continue;
-        if (species != SPECIES_EGG && hp == 0)
+        if (species != SPECIES_EGG && hp <= 0)
             r7 |= 3 << i * 2;
     }
     gTasks[taskId].data[3] = r7;
@@ -2176,22 +2176,22 @@ static void sub_8038B94(u8 taskId)
     for (i = 0; i < PARTY_SIZE; i++)
     {
         u16 species = GetMonData(&sp8[i], MON_DATA_SPECIES2);
-        u16 hp = GetMonData(&sp8[i], MON_DATA_HP);
+        s16 hp = GetMonData(&sp8[i], MON_DATA_HP);
         u32 status = GetMonData(&sp8[i], MON_DATA_STATUS);
 
         if (species == SPECIES_NONE)
             continue;
-        if (species != SPECIES_EGG && hp != 0 && status == 0)
+        if (species != SPECIES_EGG && hp > 0 && status == 0)
             r7 |= 1 << i * 2;
 
         if (species == SPECIES_NONE)
             continue;
-        if (hp != 0 && (species == SPECIES_EGG || status != 0))
+        if (hp > 0 && (species == SPECIES_EGG || status != 0))
             r7 |= 2 << i * 2;
 
         if (species == SPECIES_NONE)
             continue;
-        if (species != SPECIES_EGG && hp == 0)
+        if (species != SPECIES_EGG && hp <= 0)
             r7 |= 3 << i * 2;
     }
     gTasks[taskId].data[4] = r7;
@@ -3387,7 +3387,7 @@ static void BattleIntroDrawTrainersOrMonsSprites(void)
         }
         else
         {
-            u16* hpOnSwitchout;
+            s16* hpOnSwitchout;
 
             ptr = (u8 *)&gBattleMons[gActiveBattler];
             for (i = 0; i < sizeof(struct BattlePokemon); i++)
@@ -3486,7 +3486,8 @@ static void BattleIntroDrawPartySummaryScreens(void)
             }
             else
             {
-                hpStatus[i].hp = GetMonData(&gEnemyParty[i], MON_DATA_HP);
+                s16 hp = GetMonData(&gEnemyParty[i], MON_DATA_HP); //Need to clamp this to 0
+                hpStatus[i].hp = (hp < 0) ? 0 : hp;
                 hpStatus[i].status = GetMonData(&gEnemyParty[i], MON_DATA_STATUS);
             }
         }
@@ -3504,7 +3505,8 @@ static void BattleIntroDrawPartySummaryScreens(void)
             }
             else
             {
-                hpStatus[i].hp = GetMonData(&gPlayerParty[i], MON_DATA_HP);
+                s16 hp = GetMonData(&gPlayerParty[i], MON_DATA_HP); //Need to clamp this to 0
+                hpStatus[i].hp = (hp < 0) ? 0 : hp;
                 hpStatus[i].status = GetMonData(&gPlayerParty[i], MON_DATA_STATUS);
             }
         }
@@ -3530,7 +3532,8 @@ static void BattleIntroDrawPartySummaryScreens(void)
             }
             else
             {
-                hpStatus[i].hp = GetMonData(&gPlayerParty[i], MON_DATA_HP);
+                s16 hp = GetMonData(&gPlayerParty[i], MON_DATA_HP); //Need to clamp this to 0
+                hpStatus[i].hp = (hp < 0) ? 0 : hp;
                 hpStatus[i].status = GetMonData(&gPlayerParty[i], MON_DATA_STATUS);
             }
         }
@@ -5367,7 +5370,7 @@ static void HandleAction_UseMove(void)
         gCurrentMove = gChosenMove = gBattleMons[gBattlerAttacker].moves[gCurrMovePos];
     }
 
-    if (gBattleMons[gBattlerAttacker].hp != 0)
+    if (gBattleMons[gBattlerAttacker].hp > 0)
     {
         if (GetBattlerSide(gBattlerAttacker) == B_SIDE_PLAYER)
             gBattleResults.lastUsedMovePlayer = gCurrentMove;
@@ -5380,7 +5383,7 @@ static void HandleAction_UseMove(void)
     if (gSideTimers[side].followmeTimer != 0
         && gBattleMoves[gCurrentMove].target == MOVE_TARGET_SELECTED
         && GetBattlerSide(gBattlerAttacker) != GetBattlerSide(gSideTimers[side].followmeTarget)
-        && gBattleMons[gSideTimers[side].followmeTarget].hp != 0)
+        && gBattleMons[gSideTimers[side].followmeTarget].hp > 0)
     {
         gBattlerTarget = gSideTimers[side].followmeTarget;
     }
@@ -5494,7 +5497,7 @@ static void HandleAction_UseMove(void)
     if (gBattleTypeFlags & BATTLE_TYPE_PALACE
         && gProtectStructs[gBattlerAttacker].palaceUnableToUseMove)
     {
-        if (gBattleMons[gBattlerAttacker].hp == 0)
+        if (gBattleMons[gBattlerAttacker].hp <= 0)
         {
             gCurrentActionFuncId = B_ACTION_FINISHED;
             return;

@@ -1965,7 +1965,7 @@ static u8 sub_81A3DD0(u16 species, u8 arg1, s32 arg2)
     return arg1;
 }
 
-static void AppendIfValid(u16 species, u16 heldItem, u16 hp, u8 lvlMode, u8 monLevel, u16 *speciesArray, u16 *itemsArray, u8 *count)
+static void AppendIfValid(u16 species, u16 heldItem, s16 hp, u8 lvlMode, u8 monLevel, u16 *speciesArray, u16 *itemsArray, u8 *count)
 {
     s32 i = 0;
 
@@ -2035,7 +2035,7 @@ static void sub_81A3FD4(void)
             u16 species = GetMonData(&gPlayerParty[monId], MON_DATA_SPECIES2);
             u16 heldItem = GetMonData(&gPlayerParty[monId], MON_DATA_HELD_ITEM);
             u8 level = GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL);
-            u16 hp = GetMonData(&gPlayerParty[monId], MON_DATA_HP);
+            s16 hp = GetMonData(&gPlayerParty[monId], MON_DATA_HP);
             if (VarGet(VAR_FRONTIER_FACILITY) == FRONTIER_FACILITY_PYRAMID)
             {
                 if (heldItem == 0)

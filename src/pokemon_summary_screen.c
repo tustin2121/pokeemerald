@@ -72,8 +72,8 @@ static EWRAM_DATA struct PssData
         u32 exp; // 0x10
         u16 moves[4]; // 0x14
         u8 pp[4]; // 0x1C
-        u16 currentHP; // 0x20
-        u16 maxHP; // 0x22
+        s16 currentHP; // 0x20
+        s16 maxHP; // 0x22
         u16 atk; // 0x24
         u16 def; // 0x26
         u16 spatk; // 0x28
@@ -3300,7 +3300,7 @@ static void BufferLeftColumnStats(void)
     u8 *attackString = Alloc(8);
     u8 *defenseString = Alloc(8);
 
-    ConvertIntToDecimalStringN(currentHPString, pssData->summary.currentHP, 1, 3);
+    ConvertIntToDecimalStringN(currentHPString, pssData->summary.currentHP, STR_CONV_MODE_LEADING_MINUS, 3);
     ConvertIntToDecimalStringN(maxHPString, pssData->summary.maxHP, 1, 3);
     ConvertIntToDecimalStringN(attackString, pssData->summary.atk, 1, 7);
     ConvertIntToDecimalStringN(defenseString, pssData->summary.def, 1, 7);

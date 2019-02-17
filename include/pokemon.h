@@ -242,8 +242,8 @@ struct Pokemon
     u32 status;
     u8 level;
     u8 mail;
-    u16 hp;
-    u16 maxHP;
+    s16 hp;
+    s16 maxHP;
     u16 attack;
     u16 defense;
     u16 speed;
@@ -288,10 +288,10 @@ struct BattlePokemon
     /*0x22*/ u8 type2;
     /*0x23*/ u8 unknown;
     /*0x24*/ u8 pp[4];
-    /*0x28*/ u16 hp;
+    /*0x28*/ s16 hp;
     /*0x2A*/ u8 level;
     /*0x2B*/ u8 friendship;
-    /*0x2C*/ u16 maxHP;
+    /*0x2C*/ s16 maxHP;
     /*0x2E*/ u16 item;
     /*0x30*/ u8 nickname[POKEMON_NAME_LENGTH + 1];
     /*0x3B*/ u8 ppBonuses;

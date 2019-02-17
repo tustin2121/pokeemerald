@@ -3211,9 +3211,9 @@ void CalculateMonStats(struct Pokemon *mon)
     }
     else
     {
-        if (currentHP == 0 && oldMaxHP == 0)
+        if (currentHP <= 0 && oldMaxHP == 0)
             currentHP = newMaxHP;
-        else if (currentHP != 0)
+        else if (currentHP > 0)
             currentHP += newMaxHP - oldMaxHP;
         else
             return;
@@ -4780,7 +4780,7 @@ u8 GetMonsStateToDoubles(void)
     for (i = 0; i < gPlayerPartyCount; i++)
     {
         if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES2, NULL) != SPECIES_EGG
-         && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0
+         && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) > 0
          && GetMonData(&gPlayerParty[i], MON_DATA_SPECIES2, NULL) != SPECIES_NONE)
             aliveCount++;
     }
@@ -4797,7 +4797,7 @@ u8 GetMonsStateToDoubles_2(void)
     {
         u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES2, NULL);
         if (species != SPECIES_EGG && species != SPECIES_NONE
-         && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0)
+         && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) > 0)
             aliveCount++;
     }
 
@@ -4931,7 +4931,7 @@ void RemoveBattleMonPPBonus(struct BattlePokemon *mon, u8 moveIndex)
 
 void CopyPlayerPartyMonToBattleData(u8 battlerId, u8 partyIndex)
 {
-    u16* hpSwitchout;
+    s16* hpSwitchout;
     s32 i;
     u8 nickname[POKEMON_NAME_LENGTH * 2];
 
@@ -5232,7 +5232,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         // revive?
                         if (r10 & 0x10)
                         {
-                            if (GetMonData(mon, MON_DATA_HP, NULL) != 0)
+                            if (GetMonData(mon, MON_DATA_HP, NULL) > 0)
                             {
                                 var_3C++;
                                 break;
@@ -5256,7 +5256,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         }
                         else
                         {
-                            if (GetMonData(mon, MON_DATA_HP, NULL) == 0)
+                            if (GetMonData(mon, MON_DATA_HP, NULL) <= 0)
                             {
                                 var_3C++;
                                 break;
@@ -5266,7 +5266,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         switch (dataUnsigned)
                         {
                         case 0xFF:
-                            dataUnsigned = GetMonData(mon, MON_DATA_MAX_HP, NULL) - GetMonData(mon, MON_DATA_HP, NULL);
+                            dataUnsigned = ((s16)GetMonData(mon, MON_DATA_MAX_HP, NULL)) - ((s16)GetMonData(mon, MON_DATA_HP, NULL)); //TODO????
                             break;
                         case 0xFE:
                             dataUnsigned = GetMonData(mon, MON_DATA_MAX_HP, NULL) / 2;
@@ -5281,13 +5281,13 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         {
                             if (e == 0)
                             {
-                                dataUnsigned = GetMonData(mon, MON_DATA_HP, NULL) + dataUnsigned;
-                                if (dataUnsigned > GetMonData(mon, MON_DATA_MAX_HP, NULL))
-                                    dataUnsigned = GetMonData(mon, MON_DATA_MAX_HP, NULL);
-                                SetMonData(mon, MON_DATA_HP, &dataUnsigned);
+                                dataSigned = GetMonData(mon, MON_DATA_HP, NULL) + dataUnsigned; //dataUnsigned = itemEffect
+                                if (dataSigned > GetMonData(mon, MON_DATA_MAX_HP, NULL))
+                                    dataSigned = GetMonData(mon, MON_DATA_MAX_HP, NULL);
+                                SetMonData(mon, MON_DATA_HP, &dataSigned);
                                 if (gMain.inBattle && battlerId != 4)
                                 {
-                                    gBattleMons[battlerId].hp = dataUnsigned;
+                                    gBattleMons[battlerId].hp = dataSigned; //TODO hp dataSigned?
                                     if (!(r10 & 0x10) && GetBattlerSide(gActiveBattler) == B_SIDE_PLAYER)
                                     {
                                         if (gBattleResults.numHealingItemsUsed < 255)

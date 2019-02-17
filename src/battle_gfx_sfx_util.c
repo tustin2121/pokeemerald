@@ -88,10 +88,11 @@ static const struct CompressedSpriteSheet sSpriteSheets_HealthBar[MAX_BATTLERS_C
     {gBlankGfxCompressed, 0x0120, TAG_HEALTHBAR_OPPONENT2_TILE}
 };
 
-static const struct SpritePalette sSpritePalettes_HealthBoxHealthBar[2] =
+static const struct SpritePalette sSpritePalettes_HealthBoxHealthBar[3] =
 {
     {gBattleInterface_BallStatusBarPal, TAG_HEALTHBOX_PAL},
-    {gBattleInterface_BallDisplayPal, TAG_HEALTHBAR_PAL}
+    {gBattleInterface_BallDisplayPal, TAG_HEALTHBAR_PAL},
+    {gBattleInterface_HpBarAnimPal, TAG_HEALTHBAR_DEAD_PAL}
 };
 
 // code
@@ -670,6 +671,7 @@ void BattleLoadAllHealthBoxesGfxAtOnce(void)
 
     LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[0]);
     LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[1]);
+    LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[2]);
     if (!IsDoubleBattle())
     {
         LoadCompressedSpriteSheet(&sSpriteSheet_SinglesPlayerHealthbox);
@@ -698,6 +700,7 @@ bool8 BattleLoadAllHealthBoxesGfx(u8 state)
         {
             LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[0]);
             LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[1]);
+            LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[2]);
         }
         else if (!IsDoubleBattle())
         {
@@ -1022,8 +1025,8 @@ void ClearBehindSubstituteBit(u8 battlerId)
 
 void HandleLowHpMusicChange(struct Pokemon *mon, u8 battlerId)
 {
-    u16 hp = GetMonData(mon, MON_DATA_HP);
-    u16 maxHP = GetMonData(mon, MON_DATA_MAX_HP);
+    s16 hp = GetMonData(mon, MON_DATA_HP);
+    s16 maxHP = GetMonData(mon, MON_DATA_MAX_HP);
 
     if (GetHPBarLevel(hp, maxHP) == HP_BAR_RED)
     {
@@ -1063,8 +1066,8 @@ void BattleStopLowHpSound(void)
 
 u8 GetMonHPBarLevel(struct Pokemon *mon)
 {
-    u16 hp = GetMonData(mon, MON_DATA_HP);
-    u16 maxHP = GetMonData(mon, MON_DATA_MAX_HP);
+    s16 hp = GetMonData(mon, MON_DATA_HP);
+    s16 maxHP = GetMonData(mon, MON_DATA_MAX_HP);
 
     return GetHPBarLevel(hp, maxHP);
 }
@@ -1078,9 +1081,9 @@ void HandleBattleLowHpMusicChange(void)
         u8 battler1PartyId = pokemon_order_func(gBattlerPartyIndexes[playerBattler1]);
         u8 battler2PartyId = pokemon_order_func(gBattlerPartyIndexes[playerBattler2]);
 
-        if (GetMonData(&gPlayerParty[battler1PartyId], MON_DATA_HP) != 0)
+        if (GetMonData(&gPlayerParty[battler1PartyId], MON_DATA_HP) > 0)
             HandleLowHpMusicChange(&gPlayerParty[battler1PartyId], playerBattler1);
-        if (IsDoubleBattle() && GetMonData(&gPlayerParty[battler2PartyId], MON_DATA_HP) != 0)
+        if (IsDoubleBattle() && GetMonData(&gPlayerParty[battler2PartyId], MON_DATA_HP) > 0)
             HandleLowHpMusicChange(&gPlayerParty[battler2PartyId], playerBattler2);
     }
 }

@@ -793,7 +793,7 @@ static void StatusInflictionScreenFade(void)
 static void HealMon(struct Pokemon *mon)
 {
     u8 i;
-    u16 hp;
+    s16 hp;
     u8 ppBonuses;
     u8 data[4];
 
@@ -936,7 +936,7 @@ static bool8 TryInflictRandomStatus(void)
             {
                 mon = &gPlayerParty[indices[i]];
                 if (pokemon_ailments_get_primary(GetMonData(mon, MON_DATA_STATUS)) == 0
-                    && GetMonData(mon, MON_DATA_HP) != 0)
+                    && GetMonData(mon, MON_DATA_HP) > 0)
                 {
                     j++;
                     species = GetMonData(mon, MON_DATA_SPECIES);
@@ -978,7 +978,7 @@ static bool8 TryInflictRandomStatus(void)
     {
         mon = &gPlayerParty[indices[i]];
         if (pokemon_ailments_get_primary(GetMonData(mon, MON_DATA_STATUS)) == 0
-            && GetMonData(mon, MON_DATA_HP) != 0)
+            && GetMonData(mon, MON_DATA_HP) > 0)
         {
             j++;
             species = GetMonData(mon, MON_DATA_SPECIES);
@@ -1010,7 +1010,7 @@ static bool8 AtLeastOneHealthyMon(void)
     {
         struct Pokemon *mon = &gPlayerParty[i];
         if (pokemon_ailments_get_primary(GetMonData(mon, MON_DATA_STATUS)) == 0
-            && GetMonData(mon, MON_DATA_HP) != 0)
+            && GetMonData(mon, MON_DATA_HP) > 0)
         {
             healthyMonsCount++;
         }
@@ -1292,8 +1292,8 @@ static void TryHealMons(u8 healCount)
     {
         bool32 canBeHealed = FALSE;
         struct Pokemon *mon = &gPlayerParty[indices[i]];
-        u16 curr = GetMonData(mon, MON_DATA_HP);
-        u16 max = GetMonData(mon, MON_DATA_MAX_HP);
+        s16 curr = GetMonData(mon, MON_DATA_HP);
+        s16 max = GetMonData(mon, MON_DATA_MAX_HP);
         if (curr < max)
         {
             canBeHealed = TRUE;
@@ -1498,7 +1498,7 @@ static bool8 AtLeastTwoAliveMons(void)
     countDead = 0;
     for (i = 0; i < 3; i++, mon++)
     {
-        if (GetMonData(mon, MON_DATA_HP) == 0)
+        if (GetMonData(mon, MON_DATA_HP) <= 0)
             countDead++;
     }
 
@@ -1567,8 +1567,8 @@ static void CanAnyPartyMonsBeHealed(void)
     {
         bool32 canBeHealed = FALSE;
         struct Pokemon *mon = &gPlayerParty[i];
-        u16 curr = GetMonData(mon, MON_DATA_HP);
-        u16 max = GetMonData(mon, MON_DATA_MAX_HP);
+        s16 curr = GetMonData(mon, MON_DATA_HP);
+        s16 max = GetMonData(mon, MON_DATA_MAX_HP);
         if (curr >= max && pokemon_ailments_get_primary(GetMonData(mon, MON_DATA_STATUS)) == 0)
         {
             u8 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);

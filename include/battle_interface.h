@@ -41,6 +41,7 @@ enum
 
 #define TAG_HEALTHBOX_PAL               0xD6FF
 #define TAG_HEALTHBAR_PAL               0xD704
+#define TAG_HEALTHBAR_DEAD_PAL          0xD705
 #define TAG_STATUS_SUMMARY_BAR_PAL      0xD710
 #define TAG_STATUS_SUMMARY_BALLS_PAL    0xD712
 
@@ -75,7 +76,7 @@ u8 CreatePartyStatusSummarySprites(u8 battler, struct HpAndStatus *partyInfo, u8
 void Task_HidePartyStatusSummary(u8 taskId);
 void UpdateHealthboxAttribute(u8 healthboxSpriteId, struct Pokemon *mon, u8 elementId);
 s32 MoveBattleBar(u8 battler, u8 healthboxSpriteId, u8 whichBar, u8 arg3);
-u8 GetScaledHPFraction(s16 hp, s16 maxhp, u8 scale);
+s8 GetScaledHPFraction(s16 hp, s16 maxhp, u8 scale);
 u8 GetHPBarLevel(s16 hp, s16 maxhp);
 
 #endif // GUARD_BATTLE_INTERFACE_H

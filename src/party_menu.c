@@ -181,9 +181,9 @@ static u8 CanMonLearnTMTutor(struct Pokemon *, u16, u8);
 static void DisplayPartyPokemonBarDetail(u8, const u8*, u8, const u8*);
 static void DisplayPartyPokemonLevel(u8, struct Struct203CEDC *);
 static void DisplayPartyPokemonGender(u8, u16, u8*, struct Struct203CEDC *);
-static void DisplayPartyPokemonHP(u16, struct Struct203CEDC *);
+static void DisplayPartyPokemonHP(s16, struct Struct203CEDC *);
 static void DisplayPartyPokemonMaxHP(u16, struct Struct203CEDC *);
-static void DisplayPartyPokemonHPBar(u16, u16, struct Struct203CEDC *);
+static void DisplayPartyPokemonHPBar(s16, s16, struct Struct203CEDC *);
 static void party_menu_link_mon_icon_anim(u16, u32, struct Struct203CEDC *, u8, u32);
 static void party_menu_link_mon_held_item_object(u16, u16, struct Struct203CEDC *);
 static void party_menu_link_mon_pokeball_object(u16, struct Struct203CEDC *);
@@ -2112,7 +2112,7 @@ static void party_menu_add_per_mon_objects_internal(u8 slot)
             party_menu_link_mon_icon_anim(gUnknown_02022FF8[actualSlot].species, gUnknown_02022FF8[actualSlot].personality, &gUnknown_0203CEDC[slot], 0, 0);
             party_menu_link_mon_held_item_object(gUnknown_02022FF8[actualSlot].species, gUnknown_02022FF8[actualSlot].heldItem, &gUnknown_0203CEDC[slot]);
             party_menu_link_mon_pokeball_object(gUnknown_02022FF8[actualSlot].species, &gUnknown_0203CEDC[slot]);
-            if (gUnknown_02022FF8[actualSlot].hp == 0)
+            if (gUnknown_02022FF8[actualSlot].hp <= 0)
                 status = AILMENT_FNT;
             else
                 status = pokemon_ailments_get_primary(gUnknown_02022FF8[actualSlot].status);
@@ -2209,7 +2209,7 @@ static u8 GetPartyBoxPalBitfield(u8 slot, u8 b)
 
     if (b == 1)
         returnVar |= 1;
-    if (GetMonData(&gPlayerParty[slot], MON_DATA_HP) == 0)
+    if (GetMonData(&gPlayerParty[slot], MON_DATA_HP) <= 0)
         returnVar |= 2;
     if (PartyBoxPal_ParnterOrDisqualifiedInArena(slot) == TRUE)
         returnVar |= 8;
@@ -2892,7 +2892,7 @@ void sub_81B1F18(u8 taskId, u8 slot, s8 c, s16 HPDifference, TaskFunc func)
     SetTaskFuncWithFollowupFunc(taskId, sub_81B1E60, func);
 }
 
-static void sub_81B1FA8(u8 taskId, u8 b, u32 hp)
+static void sub_81B1FA8(u8 taskId, u8 b, s32 hp)
 {
     s16 *data = gTasks[taskId].data;
 
@@ -2939,7 +2939,7 @@ u8 sub_81B205C(struct Pokemon *mon)
 {
     u8 ailment;
 
-    if (GetMonData(mon, MON_DATA_HP) == 0)
+    if (GetMonData(mon, MON_DATA_HP) <= 0)
         return AILMENT_FNT;
     ailment = pokemon_ailments_get_primary(GetMonData(mon, MON_DATA_STATUS));
     if (ailment != AILMENT_NONE)
@@ -3417,9 +3417,9 @@ static void DisplayPartyPokemonHPCheck(struct Pokemon *mon, struct Struct203CEDC
     }
 }
 
-static void DisplayPartyPokemonHP(u16 hp, struct Struct203CEDC *ptr)
+static void DisplayPartyPokemonHP(s16 hp, struct Struct203CEDC *ptr)
 {
-    u8 *strOut = ConvertIntToDecimalStringN(gStringVar1, hp, 1, 3);
+    u8 *strOut = ConvertIntToDecimalStringN(gStringVar1, hp, STR_CONV_MODE_LEADING_MINUS, 3); //TODO increase string length??
 
     strOut[0] = CHAR_SLASH;
     strOut[1] = EOS;
@@ -3452,10 +3452,10 @@ static void DisplayPartyPokemonHPBarCheck(struct Pokemon *mon, struct Struct203C
         DisplayPartyPokemonHPBar(GetMonData(mon, MON_DATA_HP), GetMonData(mon, MON_DATA_MAX_HP), ptr);
 }
 
-static void DisplayPartyPokemonHPBar(u16 hp, u16 maxhp, struct Struct203CEDC *ptr)
+static void DisplayPartyPokemonHPBar(s16 hp, s16 maxhp, struct Struct203CEDC *ptr)
 {
     u8 palNum = GetWindowAttribute(ptr->windowId, WINDOW_PALETTE_NUM) * 16;
-    u8 hpFraction;
+    s8 hpFraction;
 
     switch (GetHPBarLevel(hp, maxhp))
     {
@@ -3474,13 +3474,27 @@ static void DisplayPartyPokemonHPBar(u16 hp, u16 maxhp, struct Struct203CEDC *pt
         break;
     }
 
-    hpFraction = GetScaledHPFraction(hp, maxhp, ptr->unk0->unk4[22]);
-    FillWindowPixelRect(ptr->windowId, gUnknown_08615AB8[1], ptr->unk0->unk4[20], ptr->unk0->unk4[21], hpFraction, 1);
-    FillWindowPixelRect(ptr->windowId, gUnknown_08615AB8[0], ptr->unk0->unk4[20], ptr->unk0->unk4[21] + 1, hpFraction, 2);
-    if (hpFraction != ptr->unk0->unk4[22])
+    hpFraction = GetScaledHPFraction(hp, maxhp, ptr->unk0->unk4[22]); //TODO Modify for less than HP!
+    if (hpFraction > 0)
     {
-        FillWindowPixelRect(ptr->windowId, 13, ptr->unk0->unk4[20] + hpFraction, ptr->unk0->unk4[21], ptr->unk0->unk4[22] - hpFraction, 1);
-        FillWindowPixelRect(ptr->windowId, 2, ptr->unk0->unk4[20] + hpFraction, ptr->unk0->unk4[21] + 1, ptr->unk0->unk4[22] - hpFraction, 2);
+        // This draws directly to the sprite window a bar made up of two colors
+        FillWindowPixelRect(ptr->windowId, gUnknown_08615AB8[1], ptr->unk0->unk4[20], ptr->unk0->unk4[21], hpFraction, 1);
+        FillWindowPixelRect(ptr->windowId, gUnknown_08615AB8[0], ptr->unk0->unk4[20], ptr->unk0->unk4[21] + 1, hpFraction, 2);
+        if (hpFraction != ptr->unk0->unk4[22]) //If it's not equal to the width of th available space...
+        {   // This fills in the rest of the space with an empty bar color
+            FillWindowPixelRect(ptr->windowId, 13, ptr->unk0->unk4[20] + hpFraction, ptr->unk0->unk4[21], ptr->unk0->unk4[22] - hpFraction, 1);
+            FillWindowPixelRect(ptr->windowId, 2, ptr->unk0->unk4[20] + hpFraction, ptr->unk0->unk4[21] + 1, ptr->unk0->unk4[22] - hpFraction, 2);
+        }
+    }
+    else
+    {
+        FillWindowPixelRect(ptr->windowId, 13, ptr->unk0->unk4[20], ptr->unk0->unk4[21], hpFraction, 1);
+        FillWindowPixelRect(ptr->windowId, 2, ptr->unk0->unk4[20], ptr->unk0->unk4[21] + 1, hpFraction, 2);
+        if (hpFraction > ptr->unk0->unk4[22]) //If it's not equal to the width of th available space...
+        {
+            FillWindowPixelRect(ptr->windowId, gUnknown_08615AB8[1], ptr->unk0->unk4[20] + hpFraction, ptr->unk0->unk4[21], ptr->unk0->unk4[22] - hpFraction, 1);
+            FillWindowPixelRect(ptr->windowId, gUnknown_08615AB8[0], ptr->unk0->unk4[20] + hpFraction, ptr->unk0->unk4[21] + 1, ptr->unk0->unk4[22] - hpFraction, 2);
+        }
     }
     CopyWindowToVram(ptr->windowId, 2);
 }
@@ -3564,7 +3578,7 @@ static bool8 sub_81B314C(void)
 
     for (i = 0; i < 6; i++)
     {
-        if (GetMonData(&party[i], MON_DATA_SPECIES) != SPECIES_NONE && (GetMonData(&party[i], MON_DATA_HP) != 0 || GetMonData(&party[i], MON_DATA_IS_EGG)))
+        if (GetMonData(&party[i], MON_DATA_SPECIES) != SPECIES_NONE && (GetMonData(&party[i], MON_DATA_HP) > 0 || GetMonData(&party[i], MON_DATA_IS_EGG)))
             j++;
         if (j > 1)
             return TRUE;
@@ -4928,7 +4942,7 @@ static void party_menu_link_mon_icon_anim(u16 species, u32 pid, struct Struct203
     }
 }
 
-static void sub_81B5A8C(u8 spriteId, u16 hp, u16 maxhp)
+static void sub_81B5A8C(u8 spriteId, s16 hp, s16 maxhp)
 {
     switch (GetHPBarLevel(hp, maxhp))
     {
@@ -5227,7 +5241,7 @@ void sub_81B617C(void)
         gUnknown_0203CEC8.unk9 = 0;
         for (i = 0; i < PARTY_SIZE; i++)
         {
-            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE && GetMonData(&gPlayerParty[i], MON_DATA_HP) == 0)
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE && GetMonData(&gPlayerParty[i], MON_DATA_HP) <= 0)
             {
                 gUnknown_0203CEC8.unk9 = i;
                 break;
@@ -5371,7 +5385,7 @@ static bool8 ExecuteTableBasedItemEffect__(u8 partyMonIndex, u16 item, u8 monMov
 
 void ItemUseCB_Medicine(u8 taskId, TaskFunc task)
 {
-    u16 hp = 0;
+    s16 hp = 0;
     struct Pokemon *mon = &gPlayerParty[gUnknown_0203CEC8.unk9];
     u16 item = gSpecialVar_ItemId;
     bool8 canHeal;
@@ -5416,7 +5430,7 @@ void ItemUseCB_Medicine(u8 taskId, TaskFunc task)
         DisplayPartyPokemonLevelCheck(mon, &gUnknown_0203CEDC[gUnknown_0203CEC8.unk9], 1);
     if (canHeal == TRUE)
     {
-        if (hp == 0)
+        if (hp <= 0)
             sub_81B0FCC(gUnknown_0203CEC8.unk9, 1);
         sub_81B1F18(taskId, gUnknown_0203CEC8.unk9, 1, GetMonData(mon, MON_DATA_HP) - hp, sub_81B672C);
         sub_81B1FA8(taskId, 0, hp);
@@ -6122,7 +6136,7 @@ void sub_81B79E8(u8 taskId, TaskFunc task)
 static void sub_81B7A28(u8 taskId)
 {
     struct Pokemon *mon = &gPlayerParty[gUnknown_0203CEC8.unk9];
-    u16 hp;
+    s16 hp;
 
     if (GetMonData(mon, MON_DATA_SPECIES) == SPECIES_NONE)
     {
@@ -6551,7 +6565,7 @@ static bool8 GetBattleEntryEligibility(struct Pokemon *mon)
     switch (VarGet(VAR_FRONTIER_FACILITY)) // oddly the specific cases are beyond 6, turns out case 9 is apparently related to link battles
     {
     case 9:
-        if (GetMonData(mon, MON_DATA_HP) != 0)
+        if (GetMonData(mon, MON_DATA_HP) > 0)
             return TRUE;
         return FALSE;
     case 8:
@@ -6759,7 +6773,7 @@ static bool8 sub_81B8A7C(void)
         StringExpandPlaceholders(gStringVar4, gText_CantSwitchWithAlly);
         return FALSE;
     }
-    if (GetMonData(&gPlayerParty[slot], MON_DATA_HP) == 0)
+    if (GetMonData(&gPlayerParty[slot], MON_DATA_HP) <= 0)
     {
         GetMonNickname(&gPlayerParty[slot], gStringVar1);
         StringExpandPlaceholders(gStringVar4, gText_PkmnHasNoEnergy);
@@ -7052,7 +7066,7 @@ static void sub_81B90D0(void)
     for (i = 1; i < PARTY_SIZE; i++)
     {
         mon = &gPlayerParty[sub_81B8F38(i)];
-        if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE && GetMonData(mon, MON_DATA_HP) != 0)
+        if (GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE && GetMonData(mon, MON_DATA_HP) > 0)
         {
             leadVal = sub_81B8F38(0);
             sub_81B8FB0(0, i);

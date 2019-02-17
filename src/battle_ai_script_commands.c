@@ -461,7 +461,7 @@ static u8 ChooseMoveOrAction_Doubles(void)
 
     for (i = 0; i < MAX_BATTLERS_COUNT; i++)
     {
-        if (i == sBattler_AI || gBattleMons[i].hp == 0)
+        if (i == sBattler_AI || gBattleMons[i].hp <= 0)
         {
             actionOrMoveIndex[i] = 0xFF;
             bestMovePointsForTarget[i] = -1;
@@ -710,7 +710,7 @@ static void BattleAICmd_if_hp_less_than(void)
     else
         battlerId = gBattlerTarget;
 
-    if ((u32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) < gAIScriptPtr[2])
+    if ((s32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) < gAIScriptPtr[2])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
     else
         gAIScriptPtr += 7;
@@ -725,7 +725,7 @@ static void BattleAICmd_if_hp_more_than(void)
     else
         battlerId = gBattlerTarget;
 
-    if ((u32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) > gAIScriptPtr[2])
+    if ((s32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) > gAIScriptPtr[2])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
     else
         gAIScriptPtr += 7;
@@ -740,7 +740,7 @@ static void BattleAICmd_if_hp_equal(void)
     else
         battlerId = gBattlerTarget;
 
-    if ((u32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) == gAIScriptPtr[2])
+    if ((s32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) == gAIScriptPtr[2])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
     else
         gAIScriptPtr += 7;
@@ -755,7 +755,7 @@ static void BattleAICmd_if_hp_not_equal(void)
     else
         battlerId = gBattlerTarget;
 
-    if ((u32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) != gAIScriptPtr[2])
+    if ((s32)(100 * gBattleMons[battlerId].hp / gBattleMons[battlerId].maxHP) != gAIScriptPtr[2])
         gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 3);
     else
         gAIScriptPtr += 7;
@@ -1311,7 +1311,7 @@ static void BattleAICmd_count_usable_party_mons(void)
     for (i = 0; i < PARTY_SIZE; i++)
     {
         if (i != battlerOnField1 && i != battlerOnField2
-         && GetMonData(&party[i], MON_DATA_HP) != 0
+         && GetMonData(&party[i], MON_DATA_HP) > 0
          && GetMonData(&party[i], MON_DATA_SPECIES2) != SPECIES_NONE
          && GetMonData(&party[i], MON_DATA_SPECIES2) != SPECIES_EGG)
         {
@@ -1561,10 +1561,10 @@ static void BattleAICmd_if_status_in_party(void)
     for (i = 0; i < PARTY_SIZE; i++)
     {
         u16 species = GetMonData(&party[i], MON_DATA_SPECIES);
-        u16 hp = GetMonData(&party[i], MON_DATA_HP);
+        s16 hp = GetMonData(&party[i], MON_DATA_HP);
         u32 status = GetMonData(&party[i], MON_DATA_STATUS);
 
-        if (species != SPECIES_NONE && species != SPECIES_EGG && hp != 0 && status == statusToCompareTo)
+        if (species != SPECIES_NONE && species != SPECIES_EGG && hp > 0 && status == statusToCompareTo)
         {
             gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 6);
             return;
@@ -1598,10 +1598,10 @@ static void BattleAICmd_if_status_not_in_party(void)
     for (i = 0; i < PARTY_SIZE; i++)
     {
         u16 species = GetMonData(&party[i], MON_DATA_SPECIES);
-        u16 hp = GetMonData(&party[i], MON_DATA_HP);
+        s16 hp = GetMonData(&party[i], MON_DATA_HP);
         u32 status = GetMonData(&party[i], MON_DATA_STATUS);
 
-        if (species != SPECIES_NONE && species != SPECIES_EGG && hp != 0 && status == statusToCompareTo)
+        if (species != SPECIES_NONE && species != SPECIES_EGG && hp > 0 && status == statusToCompareTo)
         {
             gAIScriptPtr += 10; // UB: Still bugged in Emerald. Uncomment the return statement to fix.
             // return;
@@ -1776,7 +1776,7 @@ static void BattleAICmd_if_has_move(void)
             gAIScriptPtr = T1_READ_PTR(gAIScriptPtr + 4);
         break;
     case AI_USER_PARTNER:
-        if (gBattleMons[sBattler_AI ^ BIT_FLANK].hp == 0)
+        if (gBattleMons[sBattler_AI ^ BIT_FLANK].hp <= 0)
         {
             gAIScriptPtr += 8;
             break;

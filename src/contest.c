@@ -2217,7 +2217,7 @@ u8 sub_80DAE0C(struct Pokemon *pkmn)
 
     if (GetMonData(pkmn, MON_DATA_IS_EGG))
         return 3;
-    if (GetMonData(pkmn, MON_DATA_HP) == 0)
+    if (GetMonData(pkmn, MON_DATA_HP) <= 0)
         return 4;
     switch (gSpecialVar_ContestCategory)
     {

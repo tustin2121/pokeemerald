@@ -16,9 +16,9 @@ static void sub_81617B8(u8 taskId);
 
 bool8 SetUpFieldMove_SoftBoiled(void)
 {
-    u16 maxHp;
-    u16 hp;
-    u16 minHp;
+    s16 maxHp;
+    s16 hp;
+    s16 minHp;
 
     maxHp = GetMonData(&gPlayerParty[GetCursorSelectionMonId()], MON_DATA_MAX_HP);
     hp = GetMonData(&gPlayerParty[GetCursorSelectionMonId()], MON_DATA_HP);
@@ -40,7 +40,7 @@ void sub_8161560(u8 taskId)
 
 void sub_81615A8(u8 taskId)
 {
-    u16 hp;
+    s16 hp;
 
     u8 unk9 = gUnknown_0203CEC8.unk9;
     u8 pokemonIndex = gUnknown_0203CEC8.unkA;
@@ -53,7 +53,7 @@ void sub_81615A8(u8 taskId)
     }
 
     hp = GetMonData(&gPlayerParty[pokemonIndex], MON_DATA_HP);
-    if(hp == 0 || unk9 == pokemonIndex || GetMonData(&gPlayerParty[pokemonIndex], MON_DATA_MAX_HP) == hp)
+    if(hp <= 0 || unk9 == pokemonIndex || GetMonData(&gPlayerParty[pokemonIndex], MON_DATA_MAX_HP) == hp)
     {
         sub_81617B8(taskId);
         return;

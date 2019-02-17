@@ -3327,7 +3327,7 @@ static void sub_807A320(u8 who)
                     gUnknown_0203229C->unk_45[who][i] = 0;
                     gUnknown_0203229C->unk_51[who][i] = 1;
                 }
-                else if (GetMonData(&gPlayerParty[i], MON_DATA_HP) == 0)
+                else if (GetMonData(&gPlayerParty[i], MON_DATA_HP) <= 0)
                 {
                     gUnknown_0203229C->unk_45[who][i] = 0;
                     gUnknown_0203229C->unk_51[who][i] = 0;
@@ -3347,7 +3347,7 @@ static void sub_807A320(u8 who)
                     gUnknown_0203229C->unk_45[who][i] = 0;
                     gUnknown_0203229C->unk_51[who][i] = 1;
                 }
-                else if (GetMonData(&gEnemyParty[i], MON_DATA_HP) == 0)
+                else if (GetMonData(&gEnemyParty[i], MON_DATA_HP) <= 0)
                 {
                     gUnknown_0203229C->unk_45[who][i] = 0;
                     gUnknown_0203229C->unk_51[who][i] = 0;
@@ -3364,7 +3364,8 @@ static void sub_807A320(u8 who)
 
 static void sub_807A468(u8 who)
 {
-    u16 i, curHp, maxHp;
+    u16 i;
+    s16 curHp, maxHp;
 
     switch (who)
     {
